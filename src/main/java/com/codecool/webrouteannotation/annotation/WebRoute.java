@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface WebRoute {
 
-	public String path();
-	public String method();
-	public boolean active() default true;
+	String path();
+	String method();
+	boolean active() default true;
 
 }
