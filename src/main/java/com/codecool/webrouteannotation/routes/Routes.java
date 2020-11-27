@@ -20,7 +20,7 @@ public class Routes {
 		sendResponse(httpExchange, response, 200);
 	}
 
-	@WebRoute(path = "/delete", method = "GET")
+	@WebRoute(path = "/delete", method = "GET", active = false)
 	public static void delete(HttpExchange httpExchange) throws IOException {
 		String response = "Element was removed";
 		sendResponse(httpExchange, response, 202);

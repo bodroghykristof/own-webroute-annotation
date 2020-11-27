@@ -23,9 +23,9 @@ public class Server {
 		Class<Routes> routesClass = Routes.class;
 		Method[] methods = routesClass.getMethods();
 		for (Method method : methods) {
-			WebRoute annotation = method.getAnnotation(WebRoute.class);
-			if (annotation != null) {
-				if (annotation.active()) createPath(server, method, annotation);
+			WebRoute webRoute = method.getAnnotation(WebRoute.class);
+			if (webRoute != null) {
+				if (webRoute.active()) createPath(server, method, webRoute);
 			}
 		}
 	}
@@ -33,7 +33,8 @@ public class Server {
 	private static void createPath(HttpServer server, Method method, WebRoute annotation) {
 		server.createContext(annotation.path(), (HttpExchange exchange) -> {
 			try {
-				method.invoke(null, exchange);
+				if (annotation.method().equals(exchange.getRequestMethod())) method.invoke(null, exchange);
+				else Routes.sendResponse(exchange, "Method Not ALlowed", 405);
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				Routes.sendResponse(exchange, "Server could not handle request", 500);
 			}
