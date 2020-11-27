@@ -26,18 +26,16 @@ public class Server {
 		Class<Routes> routesClass = Routes.class;
 		Method[] methods = routesClass.getMethods();
 		for (Method method : methods) {
-			Annotation[] annotations = method.getDeclaredAnnotations();
-			for (Annotation annotation : annotations) {
-				if (annotation instanceof WebRoute) {
-					WebRoute route = (WebRoute) annotation;
-					if (route.active()) server.createContext(route.path(), (HttpExchange exchange) -> {
-						try {
-							method.invoke(null, exchange);
-						} catch (IllegalAccessException | InvocationTargetException e) {
-							Routes.sendResponse(exchange, "Server could not handle request", 500);
-						}
-					});
-				}
+			Annotation annotation = method.getAnnotation(WebRoute.class);
+			if (annotation != null) {
+				WebRoute route = (WebRoute) annotation;
+				if (route.active()) server.createContext(route.path(), (HttpExchange exchange) -> {
+					try {
+						method.invoke(null, exchange);
+					} catch (IllegalAccessException | InvocationTargetException e) {
+						Routes.sendResponse(exchange, "Server could not handle request", 500);
+					}
+				});
 			}
 		}
 	}
