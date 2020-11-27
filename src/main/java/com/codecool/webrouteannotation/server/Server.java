@@ -3,12 +3,9 @@ package com.codecool.webrouteannotation.server;
 import com.codecool.webrouteannotation.annotation.WebRoute;
 import com.codecool.webrouteannotation.routes.Routes;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
@@ -26,18 +23,21 @@ public class Server {
 		Class<Routes> routesClass = Routes.class;
 		Method[] methods = routesClass.getMethods();
 		for (Method method : methods) {
-			Annotation annotation = method.getAnnotation(WebRoute.class);
+			WebRoute annotation = method.getAnnotation(WebRoute.class);
 			if (annotation != null) {
-				WebRoute route = (WebRoute) annotation;
-				if (route.active()) server.createContext(route.path(), (HttpExchange exchange) -> {
-					try {
-						method.invoke(null, exchange);
-					} catch (IllegalAccessException | InvocationTargetException e) {
-						Routes.sendResponse(exchange, "Server could not handle request", 500);
-					}
-				});
+				if (annotation.active()) createPath(server, method, annotation);
 			}
 		}
+	}
+
+	private static void createPath(HttpServer server, Method method, WebRoute annotation) {
+		server.createContext(annotation.path(), (HttpExchange exchange) -> {
+			try {
+				method.invoke(null, exchange);
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				Routes.sendResponse(exchange, "Server could not handle request", 500);
+			}
+		});
 	}
 
 }
