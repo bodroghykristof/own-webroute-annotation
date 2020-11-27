@@ -26,7 +26,7 @@ public class Routes {
 		sendResponse(httpExchange, response, 202);
 	}
 
-	private static void sendResponse(HttpExchange httpExchange, String response, int statusCode) throws IOException {
+	public static void sendResponse(HttpExchange httpExchange, String response, int statusCode) throws IOException {
 		httpExchange.sendResponseHeaders(statusCode, response.length());
 		OutputStream os = httpExchange.getResponseBody();
 		os.write(response.getBytes());
